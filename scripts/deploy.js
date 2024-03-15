@@ -1,22 +1,18 @@
-const hre = require("hardhat")
-
-const tokens = (n) => {
-  return ethers.utils.parseUnits(n.toString(), 'ether')
-}
+const { ethers } = require("hardhat");
 
 async function main() {
-  // Setup accounts & variables
-  const [deployer] = await ethers.getSigners()
+  const [deployer] = await ethers.getSigners();
 
-  // Deploy contract
-  const TokenMaster = await ethers.getContractFactory("TokenMaster")
-  const tokenMaster = await TokenMaster.deploy()
-  await tokenMaster.deployed()
+  const initialSupply = ethers.parseUnits("1000", 18);
+  const myTokenContract = await await hre.ethers.deployContract("MyToken", [initialSupply, deployer.address]);
 
-  console.log(`Deployed TokenMaster Contract at: ${tokenMaster.address}\n`)
+  await myTokenContract.waitForDeployment();
+  const balance = await myTokenContract.balanceOf(deployer.address);
+  console.log(`Balance of ${deployer.address}: ${balance.toString()} tokens`);
+  console.log(`Contract deployed to ${myTokenContract.target}`);
 }
 
-main().catch((error) => {
+main().then(() => process.exit(0)).catch(error => {
   console.error(error);
-  process.exitCode = 1;
+  process.exit(1);
 });
