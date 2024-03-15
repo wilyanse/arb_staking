@@ -81,8 +81,38 @@ describe("MyToken", function () {
       //   console.log("balance", balance);
     });
 
-    // ACTIVITY
-    xit("should not be able stake without token");
-    xit("should not be able to withdraw withouth a stake");
+    it("should not be able to stake without tokens", async function () {
+      const { cMyToken, account2 } = await loadFixture(deploy);
+      const amount = ethers.parseEther("0");
+      
+      // Ensure account2 has no tokens
+      const initialBalance = await cMyToken.balanceOf(account2.address);
+      expect(initialBalance).to.be.eq(0);
+    
+      // Attempt to stake without tokens
+      await expect(cMyToken.connect(account2).stake(amount)).to.be.revertedWith("Cannot stake 0 tokens");
+    
+      // Ensure balance remains zero
+      const balance = await cMyToken.balanceOf(account2.address);
+      expect(balance).to.be.eq(0);
+    });
+    
+    it("should not be able to withdraw without a stake", async function () {
+      const { cMyToken, account2 } = await loadFixture(deploy);
+      const amount = ethers.parseEther("100");
+    
+      // Ensure account2 has tokens
+      await cMyToken["mint"](account2.address, amount);
+      const initialBalance = await cMyToken.balanceOf(account2.address);
+      expect(initialBalance).to.be.eq(amount);
+    
+      // Attempt to withdraw without staking
+      await expect(cMyToken.connect(account2).withdraw()).to.be.revertedWith("No staked tokens");
+    
+      // Ensure balance remains unchanged
+      const balance = await cMyToken.balanceOf(account2.address);
+      expect(balance).to.be.eq(amount);
+    });
+    
   });
 });
