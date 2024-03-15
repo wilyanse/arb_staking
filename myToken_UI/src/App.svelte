@@ -80,8 +80,8 @@
   <button on:click={connectWallet}>Connect Wallet</button>
   <br>
   <p>Stake: {stake}</p>
-  <p>Update rewards: {rewards}</p>
-  <p>Staked Time: {stakeTime}</p>
+  <p>Rewards: {rewards}</p>
+  <p>Last Staked Time: {stakeTime}</p>
   <br>
   <button on:click={stakeTokens}>Stake 100</button>
   <button on:click={withdrawStakedTokens}>Withdraw</button>
